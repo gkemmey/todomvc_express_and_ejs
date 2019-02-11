@@ -1,0 +1,19 @@
+{
+  "name": "todomvc_express",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@rails/webpacker": "^3.2.2",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "postcss-smart-import": "^0.7.6",
+    "script-loader": "^0.7.2",
+    "sequelize": "^4.42.0",
+    "sequelize-cli": "^5.4.0",
+    "sqlite3": "^4.0.6"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
