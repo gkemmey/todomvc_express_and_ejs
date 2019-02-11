@@ -33,7 +33,11 @@ app.set('view engine', 'ejs');
 // controllers is a directory for all our routes
 app.use(require(path.join(__dirname, '/app/controllers'))(app))
 
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
-  console.log('Running in '+ app.settings.env)
+// sync() will create all table if they doesn't exist in database
+var models = require(path.join(__dirname, '/app/models'));
+models.sequelize.sync().then(function() {
+  app.listen(app.get('port'), function() {
+    console.log('Node app is running on port', app.get('port'));
+    console.log('Running in '+ app.settings.env)
+  });
 });

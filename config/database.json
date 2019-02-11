@@ -1,0 +1,20 @@
+{
+  "development": {
+    "username": "root",
+    "password": null,
+    "storage": "db/development.sqlite3",
+    "dialect": "sqlite"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "storage": "db/test.sqlite3",
+    "dialect": "sqlite"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "storage": "db/production.sqlite3",
+    "dialect": "sqlite"
+  }
+}
