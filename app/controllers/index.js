@@ -2,13 +2,56 @@ var express = require('express')
 
 module.exports = function(app) {
   var router = express.Router()
+  var models = require("../models")
 
-  // one day we could load a more modular set of routes with something like
-  // router.use('/comments', require('./comments'))
 
   router.get('/', function(req, res) {
-    res.render('home')
+    var query = { where: { sessionUserId: req.session.userId } }
+    var filtering = !(req.query.completed === null || req.query.completed === undefined)
+
+    if (filtering) {
+      query.where.completed = req.query.completed === "true"
+    }
+
+    models.Todo.
+      findAll(query).
+      then(function(todos) {
+        res.render('index', {
+          todos: todos,
+          url: req.originalUrl,
+          filtering: filtering
+        })
+      })
   })
+
+  router.post('/', function(req, res) {
+    models.Todo.
+      create({ title: req.body.todo.title, sessionUserId: req.session.userId }).
+      then(function() {
+        res.redirect('/');
+      });
+  })
+
+  router.patch('/:id', function(req, res) {
+    models.Todo.
+      findOne({ where: { id: req.params.id, sessionUserId: req.session.userId } }).
+      then((todo) => {
+        var { title, completed } = req.body.todo
+        if (title) { todo.title = title }
+        if (completed) { todo.completed = Array.from(completed).slice(-1)[0] === "1" }
+
+        todo.save().then(() => { res.redirect("/") })
+      })
+  })
+
+  router.delete('/:id', function(req, res) {
+    models.Todo.
+      destroy({ where: { id: req.params.id, sessionUserId: req.session.userId } }).
+      then(function() {
+        res.redirect('/');
+      })
+  })
+
 
   // cribbing webpacker expects source maps to be served at the top level. this takes
   // a request for a source amp and pulls it out of /public/packs/

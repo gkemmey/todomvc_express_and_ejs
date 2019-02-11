@@ -13,7 +13,7 @@ import "../../stylesheets/application.scss";
 require(`script-loader!sprinkles/polyfills.js`);
 
 // -------- order doesn't matter --------
-
+require(`script-loader!sprinkles/todos.js`);
 
 // import { Application } from "stimulus"
 // import { definitionsFromContext } from "stimulus/webpack-helpers"

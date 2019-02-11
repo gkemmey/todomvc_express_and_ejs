@@ -1,10 +1,39 @@
 var express = require('express');
+var session = require('express-session');
+var bodyParser = require('body-parser');
+var methodOverride = require('method-override')
 var path = require('path');
 var fs = require('fs');
 
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
+
+var hex = (n) => {
+ n = n || 32;
+ var result = '';
+
+ while (n--) {
+  result += Math.floor(Math.random() * 16).toString(16).toUpperCase();
+ }
+
+ return result;
+};
+
+// set the session.userId
+app.use(session({
+  secret: 'secret_key_base', // TODO - should be better in a real app
+  resave: false,
+  saveUninitialized: true
+}))
+
+app.use(function (req, res, next) {
+  if (!req.session.userId) {
+    req.session.userId = hex()
+  }
+
+  next()
+})
 
 // load our asset manifest
 if (app.settings.env === 'development') {
@@ -19,6 +48,19 @@ if (app.settings.env === 'development') {
 else {
   app.locals.manifest = JSON.parse(fs.readFileSync(path.join(__dirname, '/public/packs/manifest.json')))
 }
+
+// tell it how to parse body contents
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// override with POST having _method=delete
+app.use(methodOverride(function (req, res) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
+    var method = req.body._method
+    delete req.body._method
+    return method.toUpperCase();
+  }
+}));
 
 // hang app root path
 app.locals.root = path.join(__dirname);
