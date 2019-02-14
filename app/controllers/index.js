@@ -32,6 +32,25 @@ module.exports = function(app) {
       });
   })
 
+  router.patch('/update_many', function(req, res) {
+    models.Todo.
+      update(
+        { completed: Array.from(req.body.todo.completed).slice(-1)[0] === "1" },
+        { where: { id: req.body.ids, sessionUserId: req.session.userId } }
+      ).
+      then(function() {
+        res.redirect('/');
+      })
+  })
+
+  router.delete('/destroy_many', function(req, res) {
+    models.Todo.
+      destroy({ where: { id: req.body.ids, sessionUserId: req.session.userId } }).
+      then(function() {
+        res.redirect('/');
+      })
+  })
+
   router.patch('/:id', function(req, res) {
     models.Todo.
       findOne({ where: { id: req.params.id, sessionUserId: req.session.userId } }).

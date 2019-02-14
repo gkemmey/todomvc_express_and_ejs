@@ -17,14 +17,22 @@
       <section id="main">
         <form action="/update_many" method="post" accept-charset="UTF-8">
           <input type="hidden" name="_method" value="patch">
+
+          <% todos.forEach((todo) => { %>
+            <input type="hidden" name="ids[]" value="<%= todo.id %>">
+          <% }) %>
+
           <input name="todo[completed]" type="hidden" value="0">
-          <input id="toggle-all" name="todo[completed]" type="checkbox" value="1" checked="checked">
+          <input id="toggle-all" name="todo[completed]" type="checkbox"
+                                                        value="1"
+                                                        <%= todos.every((t) => ( t.completed )) ? 'checked="checked"' : '' %>
+                                                        data-behavior="submit_form_when_clicked">
           <label for="toggle-all">Mark all as complete</label>
         </form>
 
         <ul id="todos">
           <% todos.forEach((todo) => { %>
-            <li class="<%= todo.completed ? "completed" : "" %>">
+            <li class="<%= todo.completed ? "completed" : "" %>" data-behavior="double_click_to_edit">
               <div class="view">
                 <form action="/<%= todo.id %>" method="post" accept-charset="UTF-8">
                   <input type="hidden" name="_method" value="patch">
@@ -44,7 +52,18 @@
                 </form>
               </div>
 
-              <!-- TODO - double click form -->
+              <form action="/<%= todo.id %>" method="post" accept-charset="UTF-8">
+                <input type="hidden" name="_method" value="patch">
+                <input id="todo_title" name="todo[title]" type="text"
+                                                          value="<%= todo.title %>"
+                                                          class="edit"
+                                                          autocomplete="off"
+                                                          data-behavior="<%= [
+                                                            'visible_after_double_clicking_to_edit',
+                                                            'submit_form_when_blurred',
+                                                            'cancel_edit_on_escape'
+                                                          ].join(' ') %>">
+              </form>
             </li>
           <% }) %>
         </ul>
@@ -78,9 +97,9 @@
         <% if (todos.filter((t) => ( t.completed )).length > 0) { %>
           <form action="/destroy_many" method="post" accept-charset="UTF-8">
             <input type="hidden" name="_method" value="delete">
-            
+
             <% todos.forEach((t) => { %>
-              <input type="hidden" name="ids[]" id="ids_" value="<%= t.id %>">
+              <input type="hidden" name="ids[]" value="<%= t.id %>">
             <% }) %>
             <button name="button" type="submit" id="clear-completed">Clear completed</button>
           </form>
