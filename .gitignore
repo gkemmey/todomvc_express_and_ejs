@@ -25,6 +25,7 @@ out.diff
 
 # don't track node_modules
 /node_modules
+/client/node_modules
 
 # ignore weird apple file
 .DS_Store
