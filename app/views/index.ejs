@@ -44,7 +44,7 @@
                                                                        data-behavior="submit_form_when_clicked">
                 </form>
 
-                <label data-behavior="hidden_after_double_clicking_to_edit"><%= todo.title %></label>
+                <label><%= todo.title %></label>
 
                 <form action="/<%= todo.id %>" accept-charset="UTF-8" method="post">
                   <input type="hidden" name="_method" value="delete">
@@ -59,7 +59,6 @@
                                                           class="edit"
                                                           autocomplete="off"
                                                           data-behavior="<%= [
-                                                            'visible_after_double_clicking_to_edit',
                                                             'submit_form_when_blurred',
                                                             'cancel_edit_on_escape'
                                                           ].join(' ') %>">

@@ -4,14 +4,12 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "babel-loader": "8.0.5",
-    "webpack": "4.28.3",
-    
-    "@rails/webpacker": "^3.2.2",
+    "@rails/webpacker": "^4.0.1",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "method-override": "^3.0.0",
+    "postcss-cssnext": "^3.1.0",
     "postcss-smart-import": "^0.7.6",
     "script-loader": "^0.7.2",
     "sequelize": "^4.42.0",
@@ -20,5 +18,8 @@
   },
   "scripts": {
     "start": "node app.js"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^3.2.1"
   }
 }
