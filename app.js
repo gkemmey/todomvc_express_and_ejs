@@ -51,6 +51,7 @@ else {
 
 // tell it how to parse body contents
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json())
 
 // override with POST having _method=delete
 app.use(methodOverride(function (req, res) {

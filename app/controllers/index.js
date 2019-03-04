@@ -5,7 +5,7 @@ module.exports = function(app) {
   var models = require("../models")
 
 
-  router.get('/', function(req, res) {
+  router.get('/todos', function(req, res) {
     var query = { where: { sessionUserId: req.session.userId } }
     var filtering = !(req.query.completed === null || req.query.completed === undefined)
 
@@ -16,42 +16,39 @@ module.exports = function(app) {
     models.Todo.
       findAll(query).
       then(function(todos) {
-        res.render('index', {
-          todos: todos,
-          url: req.originalUrl,
-          filtering: filtering
-        })
+        res.header('Content-Type', 'application/json');
+        res.send({ todos: todos });
       })
   })
 
-  router.post('/', function(req, res) {
+  router.post('/todos', function(req, res) {
     models.Todo.
       create({ title: req.body.todo.title, sessionUserId: req.session.userId }).
       then(function() {
-        res.redirect('/');
+        res.sendStatus(200)
       });
   })
 
-  router.patch('/update_many', function(req, res) {
+  router.patch('/todos/update_many', function(req, res) {
     models.Todo.
       update(
         { completed: Array.from(req.body.todo.completed).slice(-1)[0] === "1" },
         { where: { id: req.body.ids, sessionUserId: req.session.userId } }
       ).
       then(function() {
-        res.redirect('/');
+        res.sendStatus(200)
       })
   })
 
-  router.delete('/destroy_many', function(req, res) {
+  router.delete('/todos/destroy_many', function(req, res) {
     models.Todo.
       destroy({ where: { id: req.body.ids, sessionUserId: req.session.userId } }).
       then(function() {
-        res.redirect('/');
+        res.sendStatus(200)
       })
   })
 
-  router.patch('/:id', function(req, res) {
+  router.patch('/todos/:id', function(req, res) {
     models.Todo.
       findOne({ where: { id: req.params.id, sessionUserId: req.session.userId } }).
       then((todo) => {
@@ -59,15 +56,15 @@ module.exports = function(app) {
         if (title) { todo.title = title }
         if (completed) { todo.completed = Array.from(completed).slice(-1)[0] === "1" }
 
-        todo.save().then(() => { res.redirect("/") })
+        todo.save().then(() => { res.sendStatus(200) })
       })
   })
 
-  router.delete('/:id', function(req, res) {
+  router.delete('/todos/:id', function(req, res) {
     models.Todo.
       destroy({ where: { id: req.params.id, sessionUserId: req.session.userId } }).
       then(function() {
-        res.redirect('/');
+        res.sendStatus(200);
       })
   })
 
