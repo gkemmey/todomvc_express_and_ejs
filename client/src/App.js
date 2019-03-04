@@ -84,6 +84,12 @@ const Todo = ({ id, title, completed, refresh }) => {
              autoComplete="off"
              value={newTitle}
              onChange={(e) => { setNewTitle(e.target.value) }}
+             onKeyDown={(e) => {
+               if (e.keyCode === 27) {
+                 setNewTitle(title)
+                 setEditing(false)
+               }
+             }}
              onBlur={() => {
                if (editing && title !== newTitle) {
                  updateTodo({ title: newTitle }).then(() => { setEditing(false) })
