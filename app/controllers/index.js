@@ -1,9 +1,36 @@
 var express = require('express')
 
+const turbolinksRedirect = (res, path) => {
+  res.header('Content-Type', 'text/javascript');
+  res.send([
+    "Turbolinks.clearCache();",
+    `Turbolinks.visit("${path}", "replace");`
+  ].join("\n"));
+}
+
 module.exports = function(app) {
   var router = express.Router()
   var models = require("../models")
 
+
+  router.get('/turbolinks', function(req, res) {
+    var query = { where: { sessionUserId: req.session.userId } }
+    var filtering = !(req.query.completed === null || req.query.completed === undefined)
+
+    if (filtering) {
+      query.where.completed = req.query.completed === "true"
+    }
+
+    models.Todo.
+      findAll(query).
+      then(function(todos) {
+        res.render('turbolinks', {
+          todos: todos,
+          url: req.originalUrl,
+          filtering: filtering
+        })
+      })
+  })
 
   router.get('/', function(req, res) {
     var query = { where: { sessionUserId: req.session.userId } }
@@ -28,7 +55,12 @@ module.exports = function(app) {
     models.Todo.
       create({ title: req.body.todo.title, sessionUserId: req.session.userId }).
       then(function() {
-        res.redirect('/');
+        if (req.accepts('text/javascript') && !req.accepts('text/html')) {
+          turbolinksRedirect(res, "/turbolinks")
+        }
+        else {
+          res.redirect('/');
+        }
       });
   })
 
@@ -39,7 +71,12 @@ module.exports = function(app) {
         { where: { id: req.body.ids, sessionUserId: req.session.userId } }
       ).
       then(function() {
-        res.redirect('/');
+        if (req.accepts('text/javascript') && !req.accepts('text/html')) {
+          turbolinksRedirect(res, "/turbolinks")
+        }
+        else {
+          res.redirect('/');
+        }
       })
   })
 
@@ -47,7 +84,12 @@ module.exports = function(app) {
     models.Todo.
       destroy({ where: { id: req.body.ids, sessionUserId: req.session.userId } }).
       then(function() {
-        res.redirect('/');
+        if (req.accepts('text/javascript') && !req.accepts('text/html')) {
+          turbolinksRedirect(res, "/turbolinks")
+        }
+        else {
+          res.redirect('/');
+        }
       })
   })
 
@@ -59,7 +101,18 @@ module.exports = function(app) {
         if (title) { todo.title = title }
         if (completed) { todo.completed = Array.from(completed).slice(-1)[0] === "1" }
 
-        todo.save().then(() => { res.redirect("/") })
+        todo.save().then(() => {
+          if (req.accepts('text/javascript') && !req.accepts('text/html')) {
+            res.header('Content-Type', 'text/javascript');
+            res.send([
+              "Turbolinks.clearCache();",
+              `Turbolinks.visit("/turbolinks", "replace");`
+            ].join("\n"));
+          }
+          else {
+            res.redirect('/');
+          }
+        })
       })
   })
 
@@ -67,7 +120,12 @@ module.exports = function(app) {
     models.Todo.
       destroy({ where: { id: req.params.id, sessionUserId: req.session.userId } }).
       then(function() {
-        res.redirect('/');
+        if (req.accepts('text/javascript') && !req.accepts('text/html')) {
+          turbolinksRedirect(res, "/turbolinks")
+        }
+        else {
+          res.redirect('/');
+        }
       })
   })
 

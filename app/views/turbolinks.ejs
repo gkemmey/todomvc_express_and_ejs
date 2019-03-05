@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('shared/head') -%>
+
+  <body>
+    <section id="todoapp">
+      <header id="header">
+        <h1>todos</h1>
+        <form action="/" method="post" accept-charset="UTF-8" data-remote="true">
+          <input id="new-todo" name="todo[title]" type="text"
+                                                  placeholder="What needs to be done?"
+                                                  autofocus="autofocus"
+                                                  autocomplete="off">
+        </form>
+      </header>
+
+      <section id="main">
+        <form action="/update_many" method="post" accept-charset="UTF-8" data-remote="true">
+          <input type="hidden" name="_method" value="patch">
+
+          <% todos.forEach((todo) => { %>
+            <input type="hidden" name="ids[]" value="<%= todo.id %>">
+          <% }) %>
+
+          <input name="todo[completed]" type="hidden" value="0">
+          <input id="toggle-all" name="todo[completed]" type="checkbox"
+                                                        value="1"
+                                                        <%= todos.every((t) => ( t.completed )) ? 'checked="checked"' : '' %>
+                                                        data-behavior="submit_form_when_clicked">
+          <label for="toggle-all">Mark all as complete</label>
+        </form>
+
+        <ul id="todos">
+          <% todos.forEach((todo) => { %>
+            <li class="<%= todo.completed ? "completed" : "" %>" data-behavior="double_click_to_edit">
+              <div class="view">
+                <form action="/<%= todo.id %>" method="post" accept-charset="UTF-8" data-remote="true">
+                  <input type="hidden" name="_method" value="patch">
+                  <input name="todo[completed]" type="hidden" value="0">
+                  <input id="todo_is_completed" name="todo[completed]" type="checkbox"
+                                                                       value="1"
+                                                                       class="toggle"
+                                                                       <%= todo.completed ? 'checked="checked"' : '' %>
+                                                                       data-behavior="submit_form_when_clicked">
+                </form>
+
+                <label><%= todo.title %></label>
+
+                <form action="/<%= todo.id %>" accept-charset="UTF-8" method="post" data-remote="true">
+                  <input type="hidden" name="_method" value="delete">
+                  <button name="button" type="submit" class="destroy"></button>
+                </form>
+              </div>
+
+              <form action="/<%= todo.id %>" method="post" accept-charset="UTF-8" data-remote="true">
+                <input type="hidden" name="_method" value="patch">
+                <input id="todo_title" name="todo[title]" type="text"
+                                                          value="<%= todo.title %>"
+                                                          class="edit"
+                                                          autocomplete="off"
+                                                          data-behavior="<%= [
+                                                            'submit_form_when_blurred',
+                                                            'cancel_edit_on_escape'
+                                                          ].join(' ') %>">
+              </form>
+            </li>
+          <% }) %>
+        </ul>
+      </section>
+
+      <footer id="footer" class="<%= todos.length === 0 && !filtering ? "hidden" : "" %>">
+        <span id="todo-count">
+          <%= ((count) => (
+                `${count} ${count === 1 ? "item" : "items"} left`
+              ))(todos.filter((t) => ( !t.completed )).length) %>
+        </span>
+
+        <ul id="filters">
+          <li>
+            <a href="/turbolinks"
+               id="all"
+               class="<%= url === '/turbolinks' ? "selected" : "" %>">All</a>
+          </li>
+          <li>
+            <a href="/turbolinks?completed=false"
+               id="active"
+               class="<%= url.includes('completed=false') ? "selected" : "" %>">Active</a>
+          </li>
+          <li>
+            <a href="/turbolinks?completed=true"
+               id="completed"
+               class="<%= url.includes('completed=true') ? "selected" : "" %>">Completed</a>
+          </li>
+        </ul>
+
+        <% if (todos.filter((t) => ( t.completed )).length > 0) { %>
+          <form action="/destroy_many" method="post" accept-charset="UTF-8" data-remote="true">
+            <input type="hidden" name="_method" value="delete">
+
+            <% todos.forEach((t) => { %>
+              <input type="hidden" name="ids[]" value="<%= t.id %>">
+            <% }) %>
+            <button name="button" type="submit" id="clear-completed">Clear completed</button>
+          </form>
+        <% } %>
+      </footer>
+    </section>
+
+    <footer id="info" data-turbolinks-permanent>
+      <p>Double-click to edit a todo</p>
+      <p>Created by Gray Kemmey</p>
+      <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+    </footer>
+  </body>
+</html>

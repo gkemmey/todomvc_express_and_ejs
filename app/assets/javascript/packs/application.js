@@ -9,15 +9,13 @@
 
 import "../../stylesheets/application.scss";
 
+import Turbolinks from "turbolinks"
+Turbolinks.start()
+
 // --------- order matters --------
 require(`script-loader!sprinkles/polyfills.js`);
 
 // -------- order doesn't matter --------
 require(`script-loader!sprinkles/todos.js`);
 
-// import { Application } from "stimulus"
-// import { definitionsFromContext } from "stimulus/webpack-helpers"
-//
-// const application = Application.start()
-// const context = require.context("controllers", true, /.js$/)
-// application.load(definitionsFromContext(context))
+import "controllers"

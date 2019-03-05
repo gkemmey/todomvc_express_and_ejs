@@ -14,7 +14,9 @@
     "script-loader": "^0.7.2",
     "sequelize": "^4.42.0",
     "sequelize-cli": "^5.4.0",
-    "sqlite3": "^4.0.6"
+    "sqlite3": "^4.0.6",
+    "stimulus": "^1.1.1",
+    "turbolinks": "^5.2.0"
   },
   "scripts": {
     "start": "node app.js"
