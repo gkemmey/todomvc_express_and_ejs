@@ -23,7 +23,6 @@ on(document, "keydown", "[data-behavior~=cancel_edit_on_escape]", function(event
 });
 
 on(document, "submit", "form[data-remote~=true]", function(event) {
-  console.log("here");
   event.preventDefault();
   const { target } = event;
 
