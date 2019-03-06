@@ -19,7 +19,8 @@ module.exports = function(app) {
         res.render('index', {
           todos: todos,
           url: req.originalUrl,
-          filtering: filtering
+          filtering: filtering,
+          flash: req.flash('error')
         })
       })
   })
@@ -28,6 +29,10 @@ module.exports = function(app) {
     models.Todo.
       create({ title: req.body.todo.title, sessionUserId: req.session.userId }).
       then(function() {
+        res.redirect('/');
+      }).
+      catch((error) => {
+        req.flash('error', `You already have a todo called '${req.body.todo.title}'`)
         res.redirect('/');
       });
   })
