@@ -29,12 +29,19 @@ const destroy = (path, body, options = {}) => {
   return talk({ path: path, body, method: "DELETE", ...options })
 }
 
-const NewTodo = ({ refresh }) => {
+const NewTodo = ({ refresh, setFlash }) => {
   const [title, setTitle] = useState('')
 
   const createTodo = () => {
     return post("/", { todo: { title: title } }).
-      then((res) => { if (res.ok) { refresh() } })
+      then((res) => { return Promise.all([res.ok, res.json()]) }).
+      then(([ok, json]) => {
+        if (ok) { return refresh() }
+        throw json
+      }).
+      catch((json) => {
+        setFlash(json.flash)
+      })
   }
 
   return (
@@ -170,6 +177,7 @@ const App = ({ location: { search } }) => {
   const [cacheKey, setCacheKey] = useState(uuid())
   const refresh = () => { setCacheKey(uuid()) }
   const [todos, setTodos] = useState([])
+  const [flash, setFlash] = useState([])
 
   useEffect(() => {
     const path = search.includes("completed") ?
@@ -185,8 +193,14 @@ const App = ({ location: { search } }) => {
     <>
       <section id="todoapp">
         <header id="header">
+          {
+            flash.length > 0 &&
+              <p style={{ paddingTop: '40px', fontSize: '24px', textAlign: 'center', color: 'darkred'}}>
+                <span style={{ padding: '10px', border: '1px solid' }}>{flash}</span>
+              </p>
+          }
           <h1>todos</h1>
-          <NewTodo refresh={refresh} />
+          <NewTodo refresh={refresh} setFlash={setFlash} />
         </header>
 
         <section id="main">

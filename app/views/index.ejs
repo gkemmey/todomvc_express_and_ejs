@@ -6,6 +6,12 @@
     <section id="todoapp">
       <header id="header">
         <h1>todos</h1>
+        <% if (flash && flash.length > 0) { %>
+          <p style="padding-top: 40px; font-size: 24px; text-align: center; color: darkred;">
+            <span style="padding: 10px; border: 1px solid;"><%= flash %></span>
+          </p>
+        <% } %>
+
         <form action="/" method="post" accept-charset="UTF-8" >
           <input id="new-todo" name="todo[title]" type="text"
                                                   placeholder="What needs to be done?"

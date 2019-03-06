@@ -29,7 +29,8 @@ module.exports = function(app) {
           res.render('index', {
             todos: todos,
             url: req.originalUrl,
-            filtering: filtering
+            filtering: filtering,
+            flash: req.flash('error')
           })
         }
       })
@@ -43,6 +44,16 @@ module.exports = function(app) {
           res.sendStatus(200)
         }
         else {
+          res.redirect('/')
+        }
+      }).
+      catch((error) => {
+        if (req.accepts('json') && !req.accepts('text/html')) {
+          res.header('Content-Type', 'application/json');
+          res.status(422).send({ flash: [`You already have a todo called '${req.body.todo.title}'`] })
+        }
+        else {
+          req.flash('error', `You already have a todo called '${req.body.todo.title}'`)
           res.redirect('/')
         }
       });

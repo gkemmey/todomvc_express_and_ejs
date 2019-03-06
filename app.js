@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override')
 var path = require('path');
 var fs = require('fs');
+var flash = require('connect-flash');
 
 var app = express();
 
@@ -34,6 +35,9 @@ app.use(function (req, res, next) {
 
   next()
 })
+
+// flash messages
+app.use(flash());
 
 // load our asset manifest
 if (app.settings.env === 'development') {
