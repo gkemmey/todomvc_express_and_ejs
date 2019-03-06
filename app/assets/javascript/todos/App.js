@@ -9,6 +9,11 @@ const uuid = () => {
   });
 }
 
+const isJson = (res) => {
+  const contentType = res.headers.get("content-type");
+  return contentType && contentType.includes("application/json");
+};
+
 const talk = ({ path, method, body, credentials = "include" }) => {
   return fetch(path, { method: method,
                        credentials: credentials,
@@ -34,14 +39,12 @@ const NewTodo = ({ refresh, setFlash }) => {
 
   const createTodo = () => {
     return post("/", { todo: { title: title } }).
-      then((res) => { return Promise.all([res.ok, res.json()]) }).
+      then((res) => { return Promise.all([res.ok, isJson(res) ? res.json() : null]) }).
       then(([ok, json]) => {
-        if (ok) { return refresh() }
+        if (ok) { refresh(); setFlash([]); return; }
         throw json
       }).
-      catch((json) => {
-        setFlash(json.flash)
-      })
+      catch((json) => { setFlash(json.flash) })
   }
 
   return (
