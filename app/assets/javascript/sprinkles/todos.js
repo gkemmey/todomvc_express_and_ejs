@@ -1,10 +1,17 @@
 on(document, "click", "[data-behavior~=submit_form_when_clicked]", function(event) {
-  this.closest("form").dispatchEvent(new Event('submit', { bubbles: true }));
+  let form = this.closest("form")
+
+  if (form.dataset.remote === "true") {
+    form.dispatchEvent(new Event('submit', { bubbles: true }));
+  }
+  else {
+    form.submit()
+  }
 });
 
 on(document, "focusout", "[data-behavior~=submit_form_when_blurred]", function(event) {
   if (this.closest(".editing[data-behavior~=double_click_to_edit]")) {
-    this.closest("form").dispatchEvent(new Event('submit', { bubbles: true }));
+    this.closest("form").submit();
   }
 });
 

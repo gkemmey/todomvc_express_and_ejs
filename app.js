@@ -66,6 +66,27 @@ app.use(methodOverride(function (req, res) {
   }
 }));
 
+app.use(function(req, res, next) {
+  const _original_redirect = res.redirect
+
+  res.redirect = function(path, options = {}) {
+    if (req.accepts('text/javascript') && !req.accepts('text/html')) {
+      res.header('Content-Type', 'text/javascript');
+      res.send([
+        "Turbolinks.clearCache();",
+        // TODO - 👇 you wouldn't _normally_ change the path like this, but cheating to let both
+        //         versions (turbolinks and non) be served together
+        `Turbolinks.visit("${path == "/" ? "/turbolinks" : path}", "${options.mode || "replace"}");`
+      ].join("\n"));
+    }
+    else {
+      _original_redirect.apply(this, arguments)
+    }
+  };
+
+  next();
+})
+
 // hang app root path
 app.locals.root = path.join(__dirname);
 
