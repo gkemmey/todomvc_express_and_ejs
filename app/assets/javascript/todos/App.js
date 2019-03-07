@@ -152,15 +152,15 @@ const Footer = ({ search, todos, refresh }) => {
 
       <ul id="filters">
         <li>
-          <Link to="/" id="all" className={!filtering ? "selected" : ""}>All</Link>
+          <Link to="/react" id="all" className={!filtering ? "selected" : ""}>All</Link>
         </li>
         <li>
-          <Link to="/?completed=false"
+          <Link to="/react?completed=false"
                 id="active"
                 className={ search.includes('completed=false') ? "selected" : ""}>Active</Link>
         </li>
         <li>
-          <Link to="/?completed=true"
+          <Link to="/react?completed=true"
                 id="completed"
                 className={ search.includes('completed=true') ? "selected" : ""}>Completed</Link>
         </li>
