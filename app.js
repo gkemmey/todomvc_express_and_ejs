@@ -11,14 +11,14 @@ var app = express();
 app.set('port', (process.env.PORT || 5000));
 
 var hex = (n) => {
- n = n || 32;
- var result = '';
+  n = n || 32;
+  var result = '';
 
- while (n--) {
-  result += Math.floor(Math.random() * 16).toString(16).toUpperCase();
- }
+  while (n--) {
+    result += Math.floor(Math.random() * 16).toString(16).toUpperCase();
+  }
 
- return result;
+  return result;
 };
 
 // set the session.userId

@@ -103,7 +103,7 @@
           <form action="/destroy_many" method="post" accept-charset="UTF-8">
             <input type="hidden" name="_method" value="delete">
 
-            <% todos.forEach((t) => { %>
+            <% todos.filter((t) => ( t.completed )).forEach((t) => { %>
               <input type="hidden" name="ids[]" value="<%= t.id %>">
             <% }) %>
             <button name="button" type="submit" id="clear-completed">Clear completed</button>
