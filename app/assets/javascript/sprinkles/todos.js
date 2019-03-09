@@ -36,7 +36,8 @@ on(document, "submit", "form[data-remote~=true]", function(event) {
   fetch(target.action, { method: (target.method || "GET").toUpperCase(),
                          credentials: "include",
                          headers: { "Content-Type": "application/x-www-form-urlencoded",
-                                    "Accept": "text/javascript" },
+                                    "Accept": "text/javascript",
+                                    "X-Requested-With": "XMLHttpRequest" },
                          body: new URLSearchParams(new FormData(target)) }).
     then((res) => {
       if (res.ok) {
