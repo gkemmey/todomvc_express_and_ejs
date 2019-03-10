@@ -109,7 +109,7 @@ app.use(function(req, res, next) {
         "Turbolinks.clearCache();",
         // TODO - 👇 you wouldn't _normally_ change the path like this, but cheating to let both
         //         versions (turbolinks and non) be served together
-        `Turbolinks.visit("${path === "/" ? "/turbolinks" : path}", "${mode}");`
+        `Turbolinks.visit("${path === "/" ? "/turbolinks" : path}", { action: "${mode}" });`
       ].join("\n"));
     }
     else {
@@ -117,7 +117,7 @@ app.use(function(req, res, next) {
         req.session.turbolinksLocation = path === "/" ? "/turbolinks" : path
       }
 
-      _original_redirect.apply(this, arguments)
+      _original_redirect.apply(this, [status, path])
     }
   };
 
