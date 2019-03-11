@@ -11,8 +11,7 @@
             <span style="padding: 10px; border: 1px solid;"><%= flash %></span>
           </p>
         <% } %>
-
-        <form action="/" method="post" accept-charset="UTF-8" >
+        <form action="/" method="post" accept-charset="UTF-8" data-remote="true">
           <input id="new-todo" name="todo[title]" type="text"
                                                   placeholder="What needs to be done?"
                                                   autofocus="autofocus"
@@ -21,7 +20,7 @@
       </header>
 
       <section id="main">
-        <form action="/update_many" method="post" accept-charset="UTF-8">
+        <form action="/update_many" method="post" accept-charset="UTF-8" data-remote="true">
           <input type="hidden" name="_method" value="patch">
 
           <% todos.forEach((todo) => { %>
@@ -38,9 +37,10 @@
 
         <ul id="todos">
           <% todos.forEach((todo) => { %>
-            <li class="<%= todo.completed ? "completed" : "" %>" data-behavior="double_click_to_edit">
+            <li class="<%= todo.completed ? "completed" : "" %>" data-controller="todo"
+                                                                 data-action="dblclick->todo#startEditing">
               <div class="view">
-                <form action="/<%= todo.id %>" method="post" accept-charset="UTF-8">
+                <form action="/<%= todo.id %>" method="post" accept-charset="UTF-8" data-remote="true">
                   <input type="hidden" name="_method" value="patch">
                   <input name="todo[completed]" type="hidden" value="0">
                   <input id="todo_is_completed" name="todo[completed]" type="checkbox"
@@ -52,21 +52,23 @@
 
                 <label><%= todo.title %></label>
 
-                <form action="/<%= todo.id %>" accept-charset="UTF-8" method="post">
+                <form action="/<%= todo.id %>" accept-charset="UTF-8" method="post" data-remote="true">
                   <input type="hidden" name="_method" value="delete">
                   <button name="button" type="submit" class="destroy"></button>
                 </form>
               </div>
 
-              <form action="/<%= todo.id %>" method="post" accept-charset="UTF-8">
+              <form action="/<%= todo.id %>" method="post" accept-charset="UTF-8" data-remote="true"
+                                                                                  data-target="todo.editForm">
                 <input type="hidden" name="_method" value="patch">
                 <input id="todo_title" name="todo[title]" type="text"
                                                           value="<%= todo.title %>"
                                                           class="edit"
                                                           autocomplete="off"
-                                                          data-behavior="<%= [
-                                                            'submit_form_when_blurred',
-                                                            'cancel_edit_on_escape'
+                                                          data-target="todo.input"
+                                                          data-action="<%= [
+                                                            'focusout->todo#submitEdit',
+                                                            'keydown->todo#cancelEditOnEscape'
                                                           ].join(' ') %>">
               </form>
             </li>
@@ -85,7 +87,7 @@
           <li>
             <a href="/"
                id="all"
-               class="<%= url === '/' || url === '/todos' ? "selected" : "" %>">All</a>
+               class="<%= url === '/' ? "selected" : "" %>">All</a>
           </li>
           <li>
             <a href="/?completed=false"
@@ -100,10 +102,10 @@
         </ul>
 
         <% if (todos.filter((t) => ( t.completed )).length > 0) { %>
-          <form action="/destroy_many" method="post" accept-charset="UTF-8">
+          <form action="/destroy_many" method="post" accept-charset="UTF-8" data-remote="true">
             <input type="hidden" name="_method" value="delete">
 
-            <% todos.filter((t) => ( t.completed )).forEach((t) => { %>
+            <% todos.forEach((t) => { %>
               <input type="hidden" name="ids[]" value="<%= t.id %>">
             <% }) %>
             <button name="button" type="submit" id="clear-completed">Clear completed</button>

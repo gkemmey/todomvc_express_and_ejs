@@ -5,6 +5,7 @@ var methodOverride = require('method-override')
 var path = require('path');
 var fs = require('fs');
 var flash = require('connect-flash');
+var turbolinks = require('turbolinks-express');
 
 var app = express();
 
@@ -66,72 +67,9 @@ app.use(methodOverride(function (req, res) {
   }
 }));
 
-app.use(function(req, res, next) {
-  const _original_redirect = res.redirect
-
-  res.redirect = function(_path, _options = {}) {
-    // call modes we need to support:
-    //
-    // redirect(status, path, options)
-    // redirect(status, path)
-    // redirect(path, options)
-    // redirect(path)
-    let path = null
-    let status = null
-    let options = null
-
-    if (arguments.length === 3) { // redirect(status, path, options)
-      status = arguments[0]
-      path = arguments[1]
-      options = arguments[2]
-    }
-    else if (arguments.length === 2 && typeof arguments[0] === 'number') { // redirect(status, path)
-      status = arguments[0]
-      path = arguments[1]
-      options = {}
-    }
-    else if (arguments.length === 2) { // redirect(path, options)
-      status = 302
-      path = arguments[0]
-      options = arguments[1]
-    }
-    else {
-      status = 302
-      path = arguments[0]
-      options = {}
-    }
-
-    if (options.turbolinks !== false && req.xhr && req.method !== "GET") {
-      let mode = options.turbolinks === "advance" ? "advance" : "replace"
-
-      res.header('Content-Type', 'text/javascript');
-      res.send([
-        "Turbolinks.clearCache();",
-        // TODO - 👇 you wouldn't _normally_ change the path like this, but cheating to let both
-        //         versions (turbolinks and non) be served together
-        `Turbolinks.visit("${path === "/" ? "/turbolinks" : path}", { action: "${mode}" });`
-      ].join("\n"));
-    }
-    else {
-      if (req.get("Turbolinks-Referrer")) {
-        req.session.turbolinksLocation = path === "/" ? "/turbolinks" : path
-      }
-
-      _original_redirect.apply(this, [status, path])
-    }
-  };
-
-  next();
-})
-
-app.use(function (req, res, next) {
-  if (req.session.turbolinksLocation) {
-    res.header("Turbolinks-Location", req.session.turbolinksLocation)
-    delete req.session.turbolinksLocation
-  }
-
-  next()
-})
+// turbolinks
+app.use(turbolinks.redirect)
+app.use(turbolinks.location)
 
 // hang app root path
 app.locals.root = path.join(__dirname);

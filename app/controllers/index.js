@@ -5,26 +5,6 @@ module.exports = function(app) {
   var models = require("../models")
 
 
-  router.get('/turbolinks', function(req, res) {
-    var query = { where: { sessionUserId: req.session.userId } }
-    var filtering = !(req.query.completed === null || req.query.completed === undefined)
-
-    if (filtering) {
-      query.where.completed = req.query.completed === "true"
-    }
-
-    models.Todo.
-      findAll(query).
-      then(function(todos) {
-        res.render('turbolinks', {
-          todos: todos,
-          url: req.originalUrl,
-          filtering: filtering,
-          flash: req.flash('error')
-        })
-      })
-  })
-
   router.get('/', function(req, res) {
     var query = { where: { sessionUserId: req.session.userId } }
     var filtering = !(req.query.completed === null || req.query.completed === undefined)
